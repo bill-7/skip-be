@@ -10,9 +10,19 @@ export class MyRoom extends Room<MyRoomState> {
       console.log(client.id, message);
       this.broadcast("object", this.state)
     });
+
+    this.onMessage("draw", (client) => {
+      const p = this.state.players.get(client.sessionId)
+      if (p.hand.length < 5)
+        p.hand.push(this.randomCard())
+    })
   }
 
   onJoin(client: Client, options: any) {
+    if (this.state.players.size == 2) {
+      console.log("player cap reached")
+      return
+    }
     this.state.players.set(client.sessionId, this.newPlayer(client.sessionId))
     console.log(client.sessionId, "joined!");
   }
@@ -40,7 +50,7 @@ export class MyRoom extends Room<MyRoomState> {
   newPlayer(id: string) {
     const p = new Player
     p.id = id
-    p.hand = this.toAS(this.build(5))
+    p.hand = this.toAS(this.build(3))
     p.stock = this.toAS(this.build(10))
     return p
   }
