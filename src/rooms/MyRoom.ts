@@ -8,7 +8,7 @@ export class MyRoom extends Room<MyRoomState> {
 
     this.onMessage("state", (client, message) => {
       console.log(client.id, message);
-      this.broadcast("object", this.state)
+
     });
 
     this.onMessage("draw", (client) => {
