@@ -13,8 +13,8 @@ export class Player extends Schema {
 
 export class MyRoomState extends Schema {
   @type({ map: Player }) players = new MapSchema<Player>();
-  @type(["number"]) pile_1 = new ArraySchema<number>();
-  @type(["number"]) pile_2 = new ArraySchema<number>();
-  @type(["number"]) pile_3 = new ArraySchema<number>();
-  @type(["number"]) pile_4 = new ArraySchema<number>();
+  @type(["number"]) pile1 = new ArraySchema<number>();
+  @type(["number"]) pile2 = new ArraySchema<number>();
+  @type(["number"]) pile3 = new ArraySchema<number>();
+  @type(["number"]) pile4 = new ArraySchema<number>();
 }
