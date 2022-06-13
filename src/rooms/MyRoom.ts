@@ -1,6 +1,6 @@
-import { ArraySchema } from "@colyseus/schema";
+import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { Room, Client } from "colyseus";
-import { MyRoomState, Player } from "./schema/MyRoomState";
+import { MyRoomState, Player, Piles } from "./schema/MyRoomState";
 
 export class MyRoom extends Room<MyRoomState> {
   onCreate(options: any) {
@@ -12,7 +12,7 @@ export class MyRoom extends Room<MyRoomState> {
       Object.entries(message).forEach(([key, value]) => {
         if (key === "player.hand") p.hand = value as ArraySchema<number>
         if (key === "player.stock") p.stock = value as ArraySchema<number>
-        if (key === "piles") this.state.piles = value as ArraySchema<ArraySchema<number>>
+        if (key === "piles") this.updatePiles(value)
       })
     });
 
@@ -24,11 +24,8 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onJoin(client: Client, options: any) {
-    if (this.state.players.size == 1) {
-      this.state.pile1 = this.toAS([14])
-      this.state.pile2 = this.toAS([14])
-      this.state.pile3 = this.toAS([14])
-      this.state.pile4 = this.toAS([14])
+    if (this.state.players.size == 0) {
+      this.state.piles.set("pile", this.newPiles())
     }
     if (this.state.players.size == 2) {
       console.log("player cap reached")
@@ -65,5 +62,19 @@ export class MyRoom extends Room<MyRoomState> {
     p.hand = this.toAS(this.build(5))
     p.stock = this.toAS(this.build(10))
     return p
+  }
+
+  newPiles() {
+    const p = new Piles
+    p.pile1 = this.toAS([14])
+    p.pile2 = this.toAS([14])
+    p.pile3 = this.toAS([14])
+    p.pile4 = this.toAS([14])
+    return p
+  }
+
+  updatePiles(piles: any) {
+    const latest = this.state.piles.get("pile") as Record<string, any>
+    (piles as number[][]).forEach((pile, i) => latest["pile" + (i + 1)] = pile)
   }
 }
