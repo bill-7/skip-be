@@ -5,6 +5,7 @@ import { MyRoomState, Player, Piles } from "./schema/MyRoomState";
 export class MyRoom extends Room<MyRoomState> {
   onCreate(options: any) {
     this.setState(new MyRoomState());
+    this.state.piles.set("pile", this.newPiles())
 
     this.onMessage("state", (client, message) => {
       console.log(client.id, message);
@@ -26,7 +27,6 @@ export class MyRoom extends Room<MyRoomState> {
 
   onJoin(client: Client, options: any) {
     if (this.state.players.size == 0) {
-      this.state.piles.set("pile", this.newPiles())
     }
     if (this.state.players.size == 2) {
       console.log("player cap reached")
@@ -86,7 +86,7 @@ export class MyRoom extends Room<MyRoomState> {
   updatePiles(piles: any) {
     const latest = this.state.piles.get("pile") as Record<string, any>
     (piles as number[][]).forEach((pile, i) => {
-      latest["pile" + (i + 1)] = ((pile.includes(12)) ? pile : [])
+      latest["pile" + (i + 1)] = (!(pile.includes(12)) ? pile : [])
     })
   }
 }
