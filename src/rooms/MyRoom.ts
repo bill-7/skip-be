@@ -12,6 +12,7 @@ export class MyRoom extends Room<MyRoomState> {
       Object.entries(message).forEach(([key, value]) => {
         if (key === "player.hand") p.hand = value as ArraySchema<number>
         if (key === "player.stock") p.stock = value as ArraySchema<number>
+        if (key === "player.bench") this.updateBench(value, client.sessionId)
         if (key === "piles") this.updatePiles(value)
       })
     });
@@ -61,20 +62,31 @@ export class MyRoom extends Room<MyRoomState> {
     p.id = id
     p.hand = this.toAS(this.build(5))
     p.stock = this.toAS(this.build(10))
+    p.bench1 = this.toAS([])
+    p.bench2 = this.toAS([])
+    p.bench3 = this.toAS([])
+    p.bench4 = this.toAS([])
     return p
+  }
+
+  updateBench(benches: any, id: string) {
+    const latest = this.state.players.get(id) as Record<string, any>
+    (benches as number[][]).forEach((bench, i) => latest["bench" + (i + 1)] = bench)
   }
 
   newPiles() {
     const p = new Piles
-    p.pile1 = this.toAS([14])
-    p.pile2 = this.toAS([14])
-    p.pile3 = this.toAS([14])
-    p.pile4 = this.toAS([14])
+    p.pile1 = this.toAS([])
+    p.pile2 = this.toAS([])
+    p.pile3 = this.toAS([])
+    p.pile4 = this.toAS([])
     return p
   }
 
   updatePiles(piles: any) {
     const latest = this.state.piles.get("pile") as Record<string, any>
-    (piles as number[][]).forEach((pile, i) => latest["pile" + (i + 1)] = pile)
+    (piles as number[][]).forEach((pile, i) => {
+      latest["pile" + (i + 1)] = ((pile.includes(12)) ? pile : [])
+    })
   }
 }
